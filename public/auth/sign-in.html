@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudBlinker | ログイン</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/tailwind.css" />
+  <script src="/assets/js/env.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF8C00',
+            secondary: '#00A699'
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="min-h-screen bg-slate-50">
+  <div class="max-w-lg mx-auto py-12 px-4">
+    <div class="text-center mb-10">
+      <a href="/" class="inline-flex items-center text-2xl font-bold text-slate-900">
+        <span class="text-primary">Cloud</span>Blinker
+      </a>
+      <p class="mt-2 text-sm text-slate-500">登録したメールアドレスとパスワードでログインしてください。</p>
+    </div>
+
+    <div class="bg-white shadow-xl rounded-2xl p-8">
+      <form id="sign-in-form" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-slate-700">メールアドレス</label>
+          <input type="email" name="email" required class="mt-1 w-full rounded-lg border-slate-200 focus:border-primary focus:ring-primary" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700">パスワード</label>
+          <input type="password" name="password" minlength="8" required class="mt-1 w-full rounded-lg border-slate-200 focus:border-primary focus:ring-primary" />
+        </div>
+        <button type="submit" class="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-orange-500 transition">ログイン</button>
+      </form>
+
+      <div class="mt-6">
+        <button type="button" data-google-auth class="w-full flex items-center justify-center border border-slate-200 rounded-lg py-3 text-sm font-medium hover:bg-slate-50 transition">
+          Googleでログイン
+        </button>
+      </div>
+
+      <p class="mt-6 text-center text-sm text-slate-500">
+        アカウントが必要ですか？ <a href="/auth/sign-up.html" class="text-primary font-semibold">新規登録</a>
+      </p>
+    </div>
+  </div>
+
+  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/auth.js"></script>
+</body>
+</html>
