@@ -1,108 +1,74 @@
-import { supabase, redirectToRoleHome, showToast, fetchProfile } from './app.js';
+// /public/assets/js/auth.js
+// 認証処理（サインアップ・サインイン・OAuth）
 
-export function initAuthPages() {
-  const signUpForm = document.querySelector('#sign-up-form');
-  const signInForm = document.querySelector('#sign-in-form');
-  const googleButtons = document.querySelectorAll('[data-google-auth]');
+import { supabase, redirectByRole } from "./app.js";
 
-  if (signUpForm) {
-    signUpForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(signUpForm);
-      const email = formData.get('email')?.toString().trim();
-      const password = formData.get('password')?.toString();
-      const displayName = formData.get('display_name')?.toString().trim();
-      const role = formData.get('role')?.toString() || 'client';
+// --- サインアップ処理 ---
+const signUpForm = document.getElementById("sign-up-form");
+if (signUpForm) {
+  signUpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      if (!email || !password) {
-        showToast('メールアドレスとパスワードを入力してください', 'error');
-        return;
-      }
+    const email = signUpForm.email.value;
+    const password = signUpForm.password.value;
+    const displayName = signUpForm.display_name.value;
+    const role = signUpForm.role.value;
 
-      try {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              role,
-              display_name: displayName
-            }
-          }
-        });
-
-        if (error) throw error;
-
-        const profile = await fetchProfile();
-        const next = redirectToRoleHome(profile?.role ?? role);
-        window.location.href = next;
-      } catch (error) {
-        console.error(error);
-        showToast(error.message ?? 'サインアップに失敗しました', 'error');
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { display_name: displayName, role }
       }
     });
-  }
 
-  if (signInForm) {
-    signInForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(signInForm);
-      const email = formData.get('email')?.toString().trim();
-      const password = formData.get('password')?.toString();
+    if (error) {
+      alert("登録失敗: " + error.message);
+      return;
+    }
 
-      if (!email || !password) {
-        showToast('メールアドレスとパスワードを入力してください', 'error');
-        return;
-      }
-
-      try {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-
-        const profile = await fetchProfile();
-        const redirectParam = new URLSearchParams(window.location.search).get('redirect');
-        if (redirectParam) {
-          window.location.href = redirectParam;
-          return;
-        }
-        const role = profile?.role;
-        const next = role ? redirectToRoleHome(role) : '/';
-        window.location.href = next;
-      } catch (error) {
-        console.error(error);
-        showToast(error.message ?? 'ログインに失敗しました', 'error');
-      }
-    });
-  }
-
-  googleButtons.forEach((button) => {
-    button.addEventListener('click', async (event) => {
-      event.preventDefault();
-      const role = button.dataset.role ?? 'client';
-      const redirectPath = button.dataset.redirect ?? redirectToRoleHome(role);
-      const redirectUrl = new URL(redirectPath, window.location.origin).toString();
-      try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            queryParams: {
-              access_type: 'offline',
-              prompt: 'consent'
-            },
-            redirectTo: redirectUrl
-          }
-        });
-        if (error) throw error;
-      } catch (error) {
-        console.error(error);
-        showToast('Googleログインに失敗しました', 'error');
-      }
-    });
+    alert("確認メールを送信しました。メールをご確認ください。");
+    window.location.href = "/auth/sign-in.html";
   });
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initAuthPages);
-} else {
-  initAuthPages();
+// --- サインイン処理 ---
+const signInForm = document.getElementById("sign-in-form");
+if (signInForm) {
+  signInForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = signInForm.email.value;
+    const password = signInForm.password.value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      alert("ログイン失敗: " + error.message);
+      return;
+    }
+
+    // ロールに応じてダッシュボードへ遷移
+    redirectByRole(data.user);
+  });
+}
+
+// --- Google認証処理 ---
+const googleBtn = document.querySelector("[data-google-auth]");
+if (googleBtn) {
+  googleBtn.addEventListener("click", async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin + "/auth/callback"
+      }
+    });
+
+    if (error) {
+      alert("Google認証失敗: " + error.message);
+    }
+  });
 }
