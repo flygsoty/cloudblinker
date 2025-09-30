@@ -7,17 +7,67 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/tailwind.css" />
   <script src="/assets/js/env.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF8C00',
+            secondary: '#00A699'
+          }
+        }
+      }
+    };
+  </script>
 </head>
-<body class="min-h-screen bg-slate-100" data-page="client-dashboard">
-  <main class="max-w-3xl mx-auto px-4 py-24">
-    <div class="bg-white rounded-2xl shadow-sm p-10 text-center">
-      <h1 class="text-2xl font-bold text-slate-900">タスク詳細ページ</h1>
-      <p class="mt-3 text-sm text-slate-500">M3以降で実装予定です。検収OK処理は後続マイルストーンで追加します。</p>
-      <a href="/client/index.html" class="inline-flex items-center justify-center mt-6 px-6 py-3 bg-primary text-white rounded-lg font-semibold">ダッシュボードへ戻る</a>
-    </div>
-  </main>
+<body class="min-h-screen bg-slate-50">
+  <div class="max-w-2xl mx-auto py-12 px-4">
+    <div id="task-detail" class="space-y-4"></div>
+    <button id="start-task" class="hidden bg-primary text-white px-4 py-2 rounded">やる</button>
+  </div>
 
-  <script type="module" src="/assets/js/app.js"></script>
-  <script type="module" src="/assets/js/client.js"></script>
+  <script type="module">
+    import { supabase, requireAuth } from "/assets/js/app.js";
+
+    const session = await requireAuth();
+    const params = new URLSearchParams(window.location.search);
+    const taskId = params.get("id");
+
+    const { data: task, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .eq("id", taskId)
+      .single();
+
+    if (error) {
+      console.error(error);
+      document.getElementById("task-detail").innerHTML = `<p class="text-red-500">タスクの読み込みに失敗しました。</p>`;
+    } else {
+      document.getElementById("task-detail").innerHTML = `
+        <h2 class="text-2xl font-bold">${task.title}</h2>
+        <p>${task.description || ""}</p>
+        <p class="text-primary">報酬: ${task.reward}円</p>
+        <p>ステータス: ${task.status}</p>
+      `;
+
+      if (!task.blinker_id && task.status === "open" && session.user.user_metadata.role === "blinker") {
+        const btn = document.getElementById("start-task");
+        btn.classList.remove("hidden");
+        btn.addEventListener("click", async () => {
+          const { error: updateError } = await supabase
+            .from("tasks")
+            .update({ blinker_id: session.user.id, status: "in_progress" })
+            .eq("id", taskId);
+
+          if (updateError) {
+            alert("タスク開始に失敗しました: " + updateError.message);
+          } else {
+            alert("タスクを開始しました！");
+            location.reload();
+          }
+        });
+      }
+    }
+  </script>
 </body>
 </html>
