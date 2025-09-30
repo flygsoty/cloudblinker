@@ -21,7 +21,22 @@
   </script>
 </head>
 <body class="min-h-screen bg-slate-50">
-  <div class="max-w-5xl mx-auto py-8 px-4 space-y-8">
+  <!-- ヘッダー -->
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="/" class="text-2xl font-bold text-slate-900">
+        <span class="text-primary">Cloud</span>Blinker
+      </a>
+      <nav class="flex items-center space-x-6">
+        <span id="user-display-name" class="text-slate-700 font-medium"></span>
+        <a href="/client/topup.html" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-orange-500">入金する</a>
+        <a href="/client/tasks-new.html" class="border border-slate-200 px-4 py-2 rounded-lg hover:bg-slate-50">タスクを投稿</a>
+        <button id="sign-out-btn" class="text-slate-500 hover:text-slate-800">サインアウト</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto py-8 px-4 space-y-8">
     <!-- 残高情報 -->
     <div class="grid grid-cols-2 gap-6">
       <div class="bg-white shadow rounded-lg p-6">
@@ -42,45 +57,72 @@
         <h2 class="text-lg font-bold">あなたのタスク</h2>
         <a href="/client/tasks-new.html" class="text-primary font-semibold">新規作成</a>
       </div>
-      <ul id="my-task-list" class="space-y-4"></ul>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-slate-600">タイトル</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-slate-600">概要</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-slate-600">報酬</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-slate-600">ステータス</th>
+              <th class="px-4 py-2"></th>
+            </tr>
+          </thead>
+          <tbody id="my-task-list" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  </main>
 
   <script type="module">
-    import { supabase, requireAuth } from "/assets/js/app.js";
+    import { supabase, requireAuth, signOut } from "/assets/js/app.js";
 
     const session = await requireAuth();
-    const userId = session.user.id; // ログイン中ユーザーのUUID
+    const userId = session.user.id;
+
+    // ユーザー名表示
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("user_id", userId)
+      .single();
+
+    document.getElementById("user-display-name").textContent =
+      profile?.display_name || session.user.email;
+
+    // サインアウト処理
+    document.getElementById("sign-out-btn").addEventListener("click", async () => {
+      await signOut();
+    });
+
+    // タスク一覧取得
+    const { data: tasks, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .eq("client_id", userId)
+      .order("created_at", { ascending: false });
 
     const list = document.getElementById("my-task-list");
 
-    try {
-      const { data: tasks, error } = await supabase
-        .from("tasks")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Supabase error:", error);
-        list.innerHTML = `<li class="text-red-500">タスクの読み込みに失敗しました: ${error.message}</li>`;
-      } else if (!tasks || tasks.length === 0) {
-        list.innerHTML = `<li class="text-slate-500">まだタスクはありません。</li>`;
-      } else {
-        tasks.forEach((task) => {
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <a href="/client/task.html?id=${task.id}" class="block p-4 border rounded-lg hover:bg-slate-50">
-              <h3 class="font-bold">${task.title}</h3>
-              <p class="text-sm text-slate-500">${task.description || ""}</p>
-              <p class="text-sm">ステータス: <span class="font-semibold">${task.status}</span></p>
-            </a>
-          `;
-          list.appendChild(li);
-        });
-      }
-    } catch (err) {
-      console.error("Unexpected error:", err);
-      list.innerHTML = `<li class="text-red-500">タスク取得処理で予期せぬエラー: ${err.message}</li>`;
+    if (error) {
+      console.error("Supabase error:", error);
+      list.innerHTML = `<tr><td colspan="5" class="px-4 py-2 text-red-500">タスクの読み込みに失敗しました: ${error.message}</td></tr>`;
+    } else if (!tasks || tasks.length === 0) {
+      list.innerHTML = `<tr><td colspan="5" class="px-4 py-2 text-slate-500">まだタスクはありません。</td></tr>`;
+    } else {
+      tasks.forEach((task) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="px-4 py-2 font-medium">${task.title}</td>
+          <td class="px-4 py-2 text-slate-600">${task.description || ""}</td>
+          <td class="px-4 py-2">¥${task.reward ?? 0}</td>
+          <td class="px-4 py-2">${task.status}</td>
+          <td class="px-4 py-2 text-right">
+            <a href="/client/task.html?id=${task.id}" class="text-primary hover:underline">詳細</a>
+          </td>
+        `;
+        list.appendChild(tr);
+      });
     }
   </script>
 </body>
