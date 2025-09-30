@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudBlinker | 入金をキャンセルしました</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/tailwind.css" />
+  <script src="/assets/js/env.js"></script>
+</head>
+<body class="min-h-screen bg-slate-100" data-page="client-topup-status">
+  <main class="max-w-lg mx-auto py-24 px-4">
+    <div class="bg-white rounded-2xl shadow-sm p-10 text-center">
+      <div class="mx-auto w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 text-3xl">!</div>
+      <h1 class="mt-6 text-2xl font-bold text-slate-900">入金がキャンセルされました</h1>
+      <p class="mt-3 text-sm text-slate-500">決済を再開する場合は、ダッシュボードからもう一度入金フローを開始してください。</p>
+      <div class="mt-8 flex flex-col gap-3 items-center">
+        <a href="/client/topup.html" class="inline-flex items-center justify-center px-6 py-3 bg-primary text-white rounded-lg font-semibold">もう一度試す</a>
+        <a href="/client/index.html" class="text-sm text-slate-500">ダッシュボードへ戻る</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/client.js"></script>
+</body>
+</html>
