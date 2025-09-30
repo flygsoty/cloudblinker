@@ -50,33 +50,38 @@
     import { supabase, requireAuth } from "/assets/js/app.js";
 
     const session = await requireAuth();
-
-    // ログイン中 client のタスク一覧を取得
-    const { data: tasks, error } = await supabase
-      .from("tasks")
-      .select("*")
-      .eq("client_id", session.user.id)
-      .order("created_at", { ascending: false });
+    const userId = session.user.id; // ログイン中ユーザーのUUID
 
     const list = document.getElementById("my-task-list");
 
-    if (error) {
-      console.error(error);
-      list.innerHTML = `<li class="text-red-500">タスクの読み込みに失敗しました。</li>`;
-    } else if (!tasks || tasks.length === 0) {
-      list.innerHTML = `<li class="text-slate-500">まだタスクはありません。</li>`;
-    } else {
-      tasks.forEach((task) => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <a href="/client/task.html?id=${task.id}" class="block p-4 border rounded-lg hover:bg-slate-50">
-            <h3 class="font-bold">${task.title}</h3>
-            <p class="text-sm text-slate-500">${task.description || ""}</p>
-            <p class="text-sm">ステータス: <span class="font-semibold">${task.status}</span></p>
-          </a>
-        `;
-        list.appendChild(li);
-      });
+    try {
+      const { data: tasks, error } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("client_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Supabase error:", error);
+        list.innerHTML = `<li class="text-red-500">タスクの読み込みに失敗しました: ${error.message}</li>`;
+      } else if (!tasks || tasks.length === 0) {
+        list.innerHTML = `<li class="text-slate-500">まだタスクはありません。</li>`;
+      } else {
+        tasks.forEach((task) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <a href="/client/task.html?id=${task.id}" class="block p-4 border rounded-lg hover:bg-slate-50">
+              <h3 class="font-bold">${task.title}</h3>
+              <p class="text-sm text-slate-500">${task.description || ""}</p>
+              <p class="text-sm">ステータス: <span class="font-semibold">${task.status}</span></p>
+            </a>
+          `;
+          list.appendChild(li);
+        });
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      list.innerHTML = `<li class="text-red-500">タスク取得処理で予期せぬエラー: ${err.message}</li>`;
     }
   </script>
 </body>
