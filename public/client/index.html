@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CloudBlinker | 依頼者ダッシュボード</title>
+  <title>CloudBlinker | Client ダッシュボード</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/tailwind.css" />
   <script src="/assets/js/env.js"></script>
@@ -20,44 +20,64 @@
     };
   </script>
 </head>
-<body class="min-h-screen bg-slate-100" data-page="client-dashboard">
-  <header class="bg-white border-b border-slate-200">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/" class="text-xl font-bold text-slate-900">
-        <span class="text-primary">Cloud</span>Blinker
-      </a>
-      <nav class="flex items-center space-x-3 text-sm">
-        <a href="/client/topup.html" class="px-4 py-2 bg-primary text-white rounded-lg font-semibold">入金する</a>
-        <a href="/client/tasks-new.html" class="px-4 py-2 border border-slate-200 rounded-lg">タスクを投稿</a>
-        <button data-sign-out class="px-3 py-2 text-slate-500 hover:text-slate-900">サインアウト</button>
-      </nav>
+<body class="min-h-screen bg-slate-50">
+  <div class="max-w-5xl mx-auto py-8 px-4 space-y-8">
+    <!-- 残高情報 -->
+    <div class="grid grid-cols-2 gap-6">
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-sm font-medium text-slate-500">利用可能残高</h2>
+        <p class="text-2xl font-bold mt-2">¥0</p>
+        <p class="text-xs text-slate-400">タスク投稿や依頼者返金に利用できます。</p>
+      </div>
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-sm font-medium text-slate-500">取り置き中</h2>
+        <p class="text-2xl font-bold mt-2">¥0</p>
+        <p class="text-xs text-slate-400">進行中タスクに確保済みの金額です。</p>
+      </div>
     </div>
-  </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-10 space-y-8">
-    <section class="grid md:grid-cols-2 gap-4">
-      <div class="bg-white rounded-xl shadow-sm p-6">
-        <h2 class="text-sm font-semibold text-slate-500">利用可能残高</h2>
-        <p class="mt-3 text-3xl font-bold text-slate-900" data-available-balance>¥0</p>
-        <p class="mt-2 text-xs text-slate-400">タスク投稿や依頼者返金に利用できます。</p>
+    <!-- あなたのタスク -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold">あなたのタスク</h2>
+        <a href="/client/tasks-new.html" class="text-primary font-semibold">新規作成</a>
       </div>
-      <div class="bg-white rounded-xl shadow-sm p-6">
-        <h2 class="text-sm font-semibold text-slate-500">取り置き中</h2>
-        <p class="mt-3 text-3xl font-bold text-slate-900" data-hold-balance>¥0</p>
-        <p class="mt-2 text-xs text-slate-400">進行中タスクに確保済みの金額です。</p>
-      </div>
-    </section>
+      <ul id="my-task-list" class="space-y-4"></ul>
+    </div>
+  </div>
 
-    <section class="bg-white rounded-xl shadow-sm p-6">
-      <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-slate-800">あなたのタスク</h2>
-        <a href="/client/tasks-new.html" class="text-sm text-primary font-semibold">新規作成</a>
-      </div>
-      <div class="mt-4 grid gap-4" data-client-tasks></div>
-    </section>
-  </main>
+  <script type="module">
+    import { supabase, requireAuth } from "/assets/js/app.js";
 
-  <script type="module" src="/assets/js/app.js"></script>
-  <script type="module" src="/assets/js/client.js"></script>
+    const session = await requireAuth();
+
+    // ログイン中 client のタスク一覧を取得
+    const { data: tasks, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .eq("client_id", session.user.id)
+      .order("created_at", { ascending: false });
+
+    const list = document.getElementById("my-task-list");
+
+    if (error) {
+      console.error(error);
+      list.innerHTML = `<li class="text-red-500">タスクの読み込みに失敗しました。</li>`;
+    } else if (!tasks || tasks.length === 0) {
+      list.innerHTML = `<li class="text-slate-500">まだタスクはありません。</li>`;
+    } else {
+      tasks.forEach((task) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <a href="/client/task.html?id=${task.id}" class="block p-4 border rounded-lg hover:bg-slate-50">
+            <h3 class="font-bold">${task.title}</h3>
+            <p class="text-sm text-slate-500">${task.description || ""}</p>
+            <p class="text-sm">ステータス: <span class="font-semibold">${task.status}</span></p>
+          </a>
+        `;
+        list.appendChild(li);
+      });
+    }
+  </script>
 </body>
 </html>
