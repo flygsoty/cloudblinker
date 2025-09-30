@@ -2,362 +2,512 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CloudBlinker（クラウドブリンカー）は、AWS の小さなタスクを Blinkers が瞬時に解決する成果報酬型のマッチングサービスです。">
-    <title>CloudBlinker | AWS特化：煩雑なクラウドの「あとちょっと」を即座に解決</title>
-    <!-- Tailwind CSS CDNを読み込み -->
+    <title>AWS特化 成果報酬型 マッチングサービス CloudBlinker</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font設定: Interを使用 -->
     <style>
+        /* Google Fonts: Inter */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
+            color: #1f2937; /* Gray-800 */
+            background-color: #f9fafb; /* Gray-50 */
             scroll-behavior: smooth;
         }
-        /* スクロール時のヘッダーやフォームを考慮したオフセット */
+        /* Tailwind Config Override (ココナラ風の暖色系に調整) */
+        :root {
+            --color-primary: #FF8C00; /* Dark Orange */
+            --color-secondary: #00A699; /* Teal */
+        }
+        .bg-aws-main { background-color: var(--color-secondary); }
+        .text-aws-accent { color: var(--color-primary); }
+        .bg-aws-accent { background-color: var(--color-primary); }
+        .hover\:bg-aws-accent-dark:hover { background-color: #e57e00; }
+        .border-aws-accent { border-color: var(--color-primary); }
+        
+        /* 固定ヘッダーとトップバーの高さ調整 */
+        .header-spacer {
+            /* トップバー(40px) + メインヘッダー(56px) = 96px (6rem) */
+            padding-top: 6rem; 
+        }
+
+        /* ハンバーガーメニュー用のカスタムスタイル */
+        .menu-icon span {
+            display: block;
+            height: 2px;
+            width: 20px;
+            background-color: #1f2937;
+            margin: 4px 0;
+            transition: all 0.3s;
+        }
+        .menu-icon.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+        .menu-icon.open span:nth-child(2) { opacity: 0; }
+        .menu-icon.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+        
+        /* スクロール時のオフセット調整 */
         section[id] {
-            scroll-margin-top: 5rem; 
+            scroll-margin-top: 6rem; 
+        }
+
+        /* 派手さ向上のためのヒーロー背景装飾 */
+        .hero-bg-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg-effect::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: var(--color-primary); /* AWS Accent */
+            opacity: 0.1;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: move1 10s infinite alternate;
+        }
+        .hero-bg-effect::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 300px;
+            height: 300px;
+            background: var(--color-secondary); /* AWS Main */
+            opacity: 0.05;
+            border-radius: 60% 40% 30% 70% / 60% 50% 50% 40%;
+            animation: move2 15s infinite alternate-reverse;
+        }
+
+        @keyframes move1 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-20px, 30px) rotate(10deg); }
+        }
+        @keyframes move2 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(40px, -20px) rotate(-15deg); }
         }
     </style>
-    <!-- Open Graph (既存設定を維持) -->
-    <meta property="og:title" content="CloudBlinker | クラウドの小さな悩みを瞬時に解決">
-    <meta property="og:description" content="AWS の小さなタスクを Blinkers が瞬時に解決。成果報酬型・即時マッチング・セキュアな運用環境を実現します。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cloudblinker.site">
-    <meta property="og:image" content="https://cloudblinker.site/og-image.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <!-- Structured Data (既存設定を維持) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "CloudBlinker",
-      "url": "https://cloudblinker.site",
-      "logo": "https://cloudblinker.site/logo.png",
-      "description": "AWSの小さなタスクをBlinkersが瞬時に解決する成果報酬型マッチングサービス",
-      "contactPoint": [{
-        "@type": "ContactPoint",
-        "email": "support@cloudblinker.site",
-        "contactType": "customer support",
-        "areaServed": "JP"
-      }]
-    }
+    <script>
+        // JavaScript for mobile menu toggle
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.querySelector('.menu-icon');
+            
+            menu.classList.toggle('hidden');
+            icon.classList.toggle('open');
+        }
     </script>
 </head>
-<body class="bg-gray-50 antialiased">
+<body>
 
-    <!-- Header / Navigation Bar (粘着ヘッダーは付けず、シンプルに) -->
-    <nav class="bg-white shadow-md">
+    <!-- 1. 固定トップバー -->
+    <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white text-xs font-medium py-2 text-center shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <a href="#" class="flex-shrink-0 text-xl font-bold text-indigo-700">CloudBlinker</a>
-                <div class="hidden md:flex space-x-4">
-                    <a href="#features" class="text-gray-600 hover:text-indigo-600 transition duration-150">特徴</a>
-                    <a href="#steps" class="text-gray-600 hover:text-indigo-600 transition duration-150">利用の流れ</a>
-                    <a href="#pricing" class="text-gray-600 hover:text-indigo-600 transition duration-150">料金</a>
-                    <a href="#post-request" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition duration-150 font-medium">依頼を投稿</a>
-                </div>
-                <!-- Mobile Menu Button (今回はシンプル化のため省略) -->
-            </div>
+            <p class="animate-pulse">AWS課題、即時相談受付中！</p>
         </div>
-    </nav>
+    </div>
 
-    <!-- Hero Section -->
-    <header class="bg-indigo-700 text-white pt-16 pb-24 md:py-32">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span class="inline-block bg-indigo-800 text-indigo-100 text-xs font-semibold px-3 py-1 rounded-full uppercase mb-4 shadow-lg">AWS特化 / 成果報酬型 / 即時マッチング</span>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
-                煩雑なクラウドの「あとちょっと」を即座に解決。
-            </h1>
-            <p class="text-lg sm:text-xl font-light opacity-90 max-w-3xl mx-auto mb-8">
-                AWSの小さなタスクや緊急の調整を、認定された**Blinkers**が瞬時に代行します。時間単価ではなく、明確な**成果報酬**で。
-            </p>
-            
-            <div class="flex justify-center gap-4 flex-wrap">
-                <a href="#post-request" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl shadow-2xl text-white bg-indigo-500 hover:bg-indigo-400 transform hover:scale-105 transition duration-300 ease-in-out">
-                    <!-- lucide lightning bolt icon: svg inlined -->
-                    <svg class="w-5 h-5 mr-2 -ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2l-10 12h7v8l10-12h-7z"/></svg>
-                    タスクを投稿する (依頼者向け)
+    <!-- 2. 固定メインヘッダー (ログインボタン追加) -->
+    <header class="fixed top-10 left-0 right-0 z-50 bg-white shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-14">
+                <!-- ロゴ (サイト名修正: CloudBlinker) -->
+                <a href="#" class="flex items-center text-2xl font-extrabold text-gray-900">
+                    <!-- SVGアイコンを派手なものに変更 -->
+                    <svg class="w-6 h-6 mr-1 fill-current text-aws-accent animate-pulse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    Cloud<span class="text-aws-accent">Blinker</span>
                 </a>
-                <a href="#blinker-signup" class="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-base font-medium rounded-xl text-white hover:bg-white hover:text-indigo-700 transition duration-300 ease-in-out">
-                    Blinkersに登録する (エンジニア向け)
-                </a>
-            </div>
+                
+                <!-- デスクトップナビゲーション -->
+                <div class="flex items-center space-x-4">
+                    <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                        <a href="#forms" class="text-gray-600 hover:text-aws-accent transition duration-150 font-bold">即時相談</a>
+                        <a href="#features" class="text-gray-600 hover:text-aws-accent transition duration-150">特徴</a>
+                        <a href="#pricing" class="text-gray-600 hover:text-aws-accent transition duration-150">料金</a>
+                        <a href="#process" class="text-gray-600 hover:text-aws-accent transition duration-150">流れ</a>
+                        <a href="#blinker-cta" class="text-aws-main hover:text-aws-accent transition duration-150 font-bold">エンジニア登録</a>
+                    </nav>
 
-             <!-- Heroイメージとして、クラウドタスク解決の抽象的なSVGを配置 -->
-            <div class="mt-16 mx-auto max-w-md md:max-w-xl">
-                 <!-- ユーザーから提供された画像 (image_45b0cd.png) を配置 -->
-                 <img src="image_45b0cd.png" 
-                      alt="CloudBlinkerのシンボルマーク" 
-                      class="w-full h-auto max-h-80 mx-auto object-contain p-8 md:p-12 rounded-3xl bg-indigo-800/30 shadow-xl"
-                      onerror="this.onerror=null; this.src='https://placehold.co/400x200/4c4c9f/ffffff?text=CloudBlinker+Symbol'"
-                 >
+                    <!-- ログインボタン (デスクトップ) -->
+                    <div class="hidden md:flex items-center space-x-2">
+                        <!-- 依頼者ログイン -->
+                        <button class="text-gray-600 hover:text-gray-900 text-sm font-medium py-1 px-3 rounded-lg border border-gray-200 transition duration-150 hover:bg-gray-50">
+                            依頼者ログイン
+                        </button>
+                        <!-- Blinkerログイン -->
+                        <button class="bg-aws-main hover:bg-aws-main/80 text-white text-sm font-bold py-1 px-3 rounded-lg shadow-md transition duration-200">
+                            Blinkerログイン
+                        </button>
+                    </div>
+
+                    <!-- モバイルメニューボタン -->
+                    <button onclick="toggleMenu()" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none" aria-label="Toggle menu">
+                        <div class="menu-icon"><span></span><span></span><span></span></div>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Features Section -->
-    <section id="features" class="py-16 sm:py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl mb-3">CloudBlinkerが選ばれる理由</h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-12">あなたの小さなクラウド課題を、迅速かつ安全に、そして費用対効果高く解決します。</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <!-- モバイルメニュー (JavaScriptでトグル) -->
+    <div id="mobile-menu" class="hidden fixed top-24 left-0 right-0 z-40 bg-white shadow-2xl md:hidden border-b border-gray-100">
+        <nav class="px-4 pt-2 pb-4 space-y-1 text-sm">
+            <a href="#forms" class="block py-2 px-3 text-white bg-aws-accent font-bold rounded-lg text-center">今すぐ相談 (最優先)</a>
+            <a href="#" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-lg">依頼者ログイン</a>
+            <a href="#" class="block py-2 px-3 text-white bg-aws-main hover:bg-aws-main/80 rounded-lg font-bold">Blinkerログイン</a>
+            <a href="#blinker-cta" class="block py-2 px-3 text-aws-main hover:bg-gray-50 rounded-lg font-bold">エンジニア登録</a>
+            <a href="#features" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-lg">サービス特徴</a>
+            <a href="#pricing" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-lg">料金モデル</a>
+            <a href="#process" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-lg">利用の流れ</a>
+        </nav>
+    </div>
+
+    <!-- メインコンテンツ (ヘッダーの高さ分、上部にパディングを追加) -->
+    <main class="header-spacer">
+        
+        <!-- ヒーローセクション (文言修正: 「小さなタスク」を「課題」に, CTA背景色修正) -->
+        <section class="py-12 md:py-20 bg-gradient-to-br from-white to-teal-50 hero-bg-effect">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                 
-                <!-- Feature 1: 即時マッチング & 最速着手 -->
-                <div class="feature-card p-6 bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300 text-left">
-                    <div class="flex items-center justify-center w-12 h-12 mb-4 bg-indigo-100 rounded-full">
-                        <!-- Lightning Bolt Icon -->
-                        <svg class="w-6 h-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2l-10 12h7v8l10-12h-7z"/></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">即時マッチング & 最速着手</h3>
-                    <p class="text-gray-600 text-sm">投稿後すぐに適任者に通知。あなたのタスクに最も早く「やります」と手が挙がり、待ち時間を最小化します。</p>
-                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-2 leading-tight">
+                    AWSの<span class="text-aws-accent">課題</span>を<br class="md:hidden">即座に解決
+                </h1>
                 
-                <!-- Feature 2: 完全成果報酬 -->
-                <div class="feature-card p-6 bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300 text-left">
-                    <div class="flex items-center justify-center w-12 h-12 mb-4 bg-indigo-100 rounded-full">
-                        <!-- Dollar Sign Icon -->
-                        <svg class="w-6 h-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s4 0 4 4v3h-4v4h4v3c0 2-2 4-4 4s-4-2-4-4v-3h4v-4h-4V6c0-2 2-4 4-4z"/></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">完全成果報酬</h3>
-                    <p class="text-gray-600 text-sm">成果物の納品と検収が完了するまで費用は一切発生しません。時間単価の契約ではないため、無駄なコストを排除します。</p>
-                </div>
-
-                <!-- Feature 3: セキュアな作業環境 -->
-                <div class="feature-card p-6 bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300 text-left">
-                    <div class="flex items-center justify-center w-12 h-12 mb-4 bg-indigo-100 rounded-full">
-                        <!-- Lock Icon -->
-                        <svg class="w-6 h-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">セキュアな作業環境</h3>
-                    <p class="text-gray-600 text-sm">最小権限の一時的ロール発行、操作の監査ログを完備。大切なAWSアカウントを安心して共有できる仕組みです。</p>
-                </div>
-
-                <!-- Feature 4: 明確な検収基準 -->
-                <div class="feature-card p-6 bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300 text-left">
-                    <div class="flex items-center justify-center w-12 h-12 mb-4 bg-indigo-100 rounded-full">
-                        <!-- Checklist Icon -->
-                        <svg class="w-6 h-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15.2l4.8 4.8 11.2-11.2"/><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">明確な検収基準</h3>
-                    <p class="text-gray-600 text-sm">客観的な成果条件（例: S3書き込み成功の証跡）を事前に定義。手戻りなくスムーズにタスク完了を確認できます。</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Steps Section (How it works) -->
-    <section id="steps" class="py-16 sm:py-24 bg-indigo-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl mb-3">ご利用の流れ</h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-12">タスク投稿から完了まで、わずか3ステップで完結します。</p>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
-                <!-- Step 1 -->
-                <div class="step p-8 bg-white rounded-xl shadow-xl transition duration-300 hover:shadow-2xl">
-                    <div class="text-4xl font-extrabold text-indigo-600 mb-4">01</div>
-                    <h4 class="text-2xl font-bold text-gray-900 mb-3">タスクを投稿・報酬設定</h4>
-                    <p class="text-gray-600">AWSカテゴリ（IAM, S3, EC2など）を選び、詳細な作業内容、**客観的な成果条件**、希望報酬額を記入して投稿します。</p>
+                <!-- 修正: 確実に濃い背景色を使用 (bg-aws-accent/90 -> bg-aws-accent) -->
+                <div class="inline-flex items-center space-x-4 bg-aws-accent text-white p-3 md:p-4 rounded-xl shadow-2xl mb-6 transform scale-95 md:scale-100 ring-4 ring-white animate-bounce-slow">
+                    <span class="text-sm md:text-xl font-bold tracking-wider">AWS特化</span>
+                    <span class="text-sm md:text-xl font-bold tracking-wider border-l border-r border-white/50 px-3">完全成果報酬型</span>
+                    <span class="text-sm md:text-xl font-extrabold tracking-widest">即時マッチング</span>
                 </div>
                 
-                <!-- Step 2 -->
-                <div class="step p-8 bg-white rounded-xl shadow-xl transition duration-300 hover:shadow-2xl">
-                    <div class="text-4xl font-extrabold text-indigo-600 mb-4">02</div>
-                    <h4 class="text-2xl font-bold text-gray-900 mb-3">Blinkers が即時受注・作業</h4>
-                    <p class="text-gray-600">該当スキルを持つBlinkersに瞬時に通知され、**最も早いエンジニア**が受注します。依頼者はアカウントの一時アクセスロールを発行します。</p>
-                </div>
-                
-                <!-- Step 3 -->
-                <div class="step p-8 bg-white rounded-xl shadow-xl transition duration-300 hover:shadow-2xl">
-                    <div class="text-4xl font-extrabold text-indigo-600 mb-4">03</div>
-                    <h4 class="text-2xl font-bold text-gray-900 mb-3">成果確認 & 報酬支払い</h4>
-                    <p class="text-gray-600">Blinkerが成果（例: 設定画面のスクリーンショット）を提示。条件確認後、報酬を支払います。問題時は運営が仲裁します。</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-    
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-16 sm:py-24">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl mb-3">料金プラン</h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-12">あなたの小さなクラウド課題を、迅速かつ安全に、そして費用対効果高く解決します。</p>
-            
-            <div class="bg-gradient-to-br from-indigo-100 to-white border-4 border-indigo-400 p-8 sm:p-12 rounded-2xl shadow-2xl">
-                <span class="inline-block bg-red-600 text-white text-sm font-bold px-4 py-1 rounded-full uppercase tracking-wider mb-4 animate-pulse">期間限定</span>
-                <h3 class="text-3xl font-bold text-indigo-700 mb-4">【β版限定】手数料無料キャンペーン</h3>
-                <p class="text-xl text-gray-700 mb-6">
-                    今なら**依頼者・Blinkersともに手数料0%**！
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
+                    「セキュリティグループの設定がわからない」「S3へのアクセス権限だけ調整したい」など、<br>煩雑なクラウドの"あとちょっと"を認定<strong>Blinker</strong>（エンジニア）が成果報酬で代行します。
                 </p>
-                <p class="text-gray-600 mb-8">
-                    通常の成果報酬額のみでご利用いただけます。将来的な手数料は、依頼者から10%、Blinkersから15%を予定しています。この機会にぜひご利用ください。
+                
+                <!-- エンジニア数表示 (サイト名修正: Blinker) -->
+                <div class="inline-flex items-center bg-white p-3 rounded-full shadow-2xl border border-aws-main mb-8 ring-4 ring-aws-main/10">
+                    <span class="text-base font-bold text-aws-accent mr-3">
+                        <svg class="w-5 h-5 inline-block mr-1 text-aws-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20v-2c0-.656-.126-1.283-.356-1.857M20 10.5V7a2 2 0 00-2-2h-3M6 14L4 6h16l-2 8M6 14h12M6 14L4 6M18 14L20 6"></path></svg>
+                        <span class="text-2xl font-extrabold">2,500</span>名以上登録
+                    </span>
+                </div>
+
+                <!-- ヒーロー画像 (サンプル) -->
+                <div class="mt-8 mx-auto max-w-lg md:max-w-4xl">
+                    <img src="image_45b0cd.png" 
+                        alt="AWSタスク解決イメージ" 
+                        class="w-full h-auto max-h-[28rem] mx-auto object-cover rounded-3xl shadow-2xl ring-4 ring-aws-main/20 transform hover:scale-[1.01] transition duration-500"
+                        onerror="this.onerror=null; this.src='https://placehold.co/1000x400/F0F0F0/00A699?text=Problem+Solved+by+Blinker+Instantly'"
+                    >
+                </div>
+            </div>
+        </section>
+
+        <!-- フォームセクション (依頼者向けフォーム) -->
+        <section id="forms" class="py-16 md:py-20 bg-white shadow-inner">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl mx-auto">
+                    
+                    <!-- Requester Form: 困り事を相談する -->
+                    <div id="post-request" class="p-8 bg-white rounded-2xl shadow-2xl border-t-8 border-aws-accent ring-4 ring-aws-accent/10">
+                        <h3 class="text-3xl font-bold text-gray-900 mb-6 flex items-center text-aws-accent">
+                            <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586M5 13a2 2 0 012-2h2m0 0l2 2m-2-2l-2-2"></path></svg>
+                            依頼者向け：困り事を相談する <span class="text-base text-gray-500 ml-3">(即時マッチング)</span>
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-6 font-medium border-b pb-4">**正確なタスク投稿が、即時マッチングの鍵です。** 以下の項目を漏れなくご記入ください。</p>
+                        
+                        <form action="https://formspree.io/f/your-form-id" method="POST" class="space-y-4">
+                            <input type="hidden" name="_subject" value="新しいタスク相談">
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="block">
+                                    <span class="text-xs font-semibold text-gray-700">お名前 <span class="text-red-500">*</span></span>
+                                    <input type="text" name="requester_name" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-aws-accent focus:ring-aws-accent p-3 text-sm">
+                                </label>
+                                <label class="block">
+                                    <span class="text-xs font-semibold text-gray-700">メールアドレス <span class="text-red-500">*</span></span>
+                                    <input type="email" name="requester_email" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-aws-accent focus:ring-aws-accent p-3 text-sm">
+                                </label>
+                            </div>
+
+                            <label class="block">
+                                <span class="text-xs font-semibold text-gray-700">タスク詳細 (困り事) <span class="text-red-500">*</span></span>
+                                <textarea name="task_details" placeholder="例：S3バケットへの特定IAMユーザーのアクセスエラーを解決したい。現在の状況とエラー内容も詳しくご記入ください。" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-aws-accent focus:ring-aws-accent p-3 text-sm resize-y min-h-[100px]"></textarea>
+                            </label>
+
+                            <!-- 想定報酬額（金額） -->
+                            <label class="block">
+                                <span class="text-xs font-semibold text-gray-700">想定報酬額 (¥) <span class="text-red-500">*</span></span>
+                                <input type="number" name="expected_price" placeholder="例: 10000 (¥5,000〜50,000推奨。成果報酬のため、タスク完了の難易度に応じて設定ください)" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-aws-accent focus:ring-aws-accent p-3 text-sm" min="1000">
+                            </label>
+
+                            <!-- 完了条件 (検収基準) -->
+                            <label class="block">
+                                <span class="text-xs font-semibold text-gray-700">完了条件 (検収基準) <span class="text-red-500">*</span></span>
+                                <textarea name="completion_criteria" placeholder="例：指定のIAMユーザーAがS3バケットBにオブジェクトをアップロードできること、かつ、アップロード後に通知がSlackに届くこと。" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-aws-accent focus:ring-aws-accent p-3 text-sm resize-y min-h-[80px]"></textarea>
+                            </label>
+
+                            <button type="submit" class="w-full bg-aws-accent text-white py-3 rounded-xl font-extrabold shadow-xl hover:bg-aws-accent-dark transition duration-300 text-lg transform hover:scale-[1.02] mt-6">
+                                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                AWSの困り事を相談する
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 特徴セクション (サイト名修正: Blinker) -->
+        <section id="features" class="py-16 md:py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-4">
+                    CloudBlinker 4つの強み
+                </h2>
+                <p class="text-lg text-gray-600 text-center mb-12">
+                    AWSの課題解決に特化し、依頼者とエンジニア双方にメリットを提供します。
                 </p>
-                <a href="#post-request" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-lg font-medium rounded-xl shadow-lg text-white bg-indigo-600 hover:bg-indigo-700 transform hover:scale-105 transition duration-300 ease-in-out">
-                    今すぐ手数料無料ではじめる
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <!-- 特徴カード 1: 即時マッチング (アスタリスク削除済み) -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl border-b-8 border-aws-accent/80 text-center transform hover:scale-[1.03] transition duration-300 group hover:shadow-2xl">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto bg-aws-accent text-white rounded-full mb-4 shadow-2xl group-hover:ring-8 ring-aws-accent/30 transition duration-300 transform group-hover:rotate-6">
+                            <!-- New Icon: Flash -->
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-extrabold mb-1 text-gray-900">最速マッチング</h3>
+                        <p class="text-sm text-gray-500">
+                            専門分野に絞り込んだ通知で、要件に最適なエンジニアが**数分で対応**を開始。
+                        </p>
+                    </div>
+
+                    <!-- 特徴カード 2: 成果報酬型 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl border-b-8 border-aws-accent/80 text-center transform hover:scale-[1.03] transition duration-300 group hover:shadow-2xl">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto bg-aws-accent text-white rounded-full mb-4 shadow-2xl group-hover:ring-8 ring-aws-accent/30 transition duration-300 transform group-hover:rotate-6">
+                            <!-- New Icon: Money -->
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8a1 1 0 100-2 1 1 0 000 2zM20.243 4.243a8 8 0 010 11.314L15.657 18M4.243 20.243L7.757 16.73M16.73 7.757L13.21 4.243"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-extrabold mb-1 text-gray-900">完全成果報酬</h3>
+                        <p class="text-sm text-gray-500">
+                            タスク完了と検収後に支払い。初期費用・月額費用は**$0**で、無駄なコストをカット。
+                        </p>
+                    </div>
+
+                    <!-- 特徴カード 3: セキュアな環境 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl border-b-8 border-aws-accent/80 text-center transform hover:scale-[1.03] transition duration-300 group hover:shadow-2xl">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto bg-aws-accent text-white rounded-full mb-4 shadow-2xl group-hover:ring-8 ring-aws-accent/30 transition duration-300 transform group-hover:rotate-6">
+                            <!-- New Icon: Shield -->
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.696 5.176-1.406 9-6.105 9-11.696 0-1.815-.352-3.541-1.006-5.122z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-extrabold mb-1 text-gray-900">最小権限の安全性</h3>
+                        <p class="text-sm text-gray-500">
+                            一時的なIAMロール発行を徹底し、作業範囲外のアクセスを**厳重に防止**します。
+                        </p>
+                    </div>
+                    
+                    <!-- 特徴カード 4: 明確な検収 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl border-b-8 border-aws-accent/80 text-center transform hover:scale-[1.03] transition duration-300 group hover:shadow-2xl">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto bg-aws-accent text-white rounded-full mb-4 shadow-2xl group-hover:ring-8 ring-aws-accent/30 transition duration-300 transform group-hover:rotate-6">
+                            <!-- New Icon: Clipboard Check -->
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5l3-3m0 0l3 3M9 12l2 2 4-4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-extrabold mb-1 text-gray-900">客観的検収基準</h3>
+                        <p class="text-sm text-gray-500">
+                            タスク完了条件を**明確に定義**。期待した成果のみに対して報酬を支払います。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 料金モデルセクション -->
+        <section id="pricing" class="py-16 md:py-20 bg-aws-main/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-12">
+                    シンプルで明確な料金体系
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+                    
+                    <!-- 料金カード 1: 初期費用 -->
+                    <div class="bg-white p-6 rounded-xl shadow-2xl text-center border-4 border-gray-100 flex flex-col justify-between transform hover:scale-[1.05] transition duration-300">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-500 mb-2">依頼者アカウント開設</p>
+                            <p class="text-5xl font-extrabold text-aws-main mb-4">
+                                $0
+                            </p>
+                        </div>
+                        <p class="text-base text-gray-700 font-medium mt-4">いつでも無料でアカウント作成、タスクの準備が可能です。</p>
+                    </div>
+
+                    <!-- 料金カード 2: 月額費用 (最も強調) -->
+                    <div class="bg-white p-8 rounded-3xl shadow-2xl text-center ring-8 ring-aws-accent/50 transform lg:scale-[1.1] border-4 border-aws-accent flex flex-col justify-between transition duration-500">
+                        <div>
+                            <p class="text-base font-extrabold text-aws-accent mb-3 uppercase tracking-wider">★最もお得★<br>月額費用 / ランニングコスト</p>
+                            <p class="text-7xl font-extrabold text-aws-accent mb-6">
+                                $0
+                            </p>
+                        </div>
+                        <p class="text-lg text-gray-700 font-extrabold mt-4">プロジェクトを依頼するまで、費用は一切かかりません。</p>
+                        <p class="text-sm text-gray-500 mt-2">（※成果報酬のみ発生します）</p>
+                    </div>
+
+                    <!-- 料金カード 3: 成果報酬 -->
+                    <div class="bg-white p-6 rounded-xl shadow-2xl text-center border-4 border-gray-100 flex flex-col justify-between transform hover:scale-[1.05] transition duration-300">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-500 mb-2">タスク完了時の手数料</p>
+                            <p class="text-5xl font-extrabold text-gray-900 mb-4">
+                                成果報酬型
+                            </p>
+                        </div>
+                        <p class="text-base text-gray-700 font-medium mt-4">依頼額に応じて手数料が発生。タスク完了後、満足した場合のみ支払い。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 利用の流れセクション -->
+        <section id="process" class="py-16 md:py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-12">
+                    最短フローで課題を解決
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
+                    
+                    <!-- ステップ 1 -->
+                    <div class="p-4 bg-white rounded-xl shadow-lg border-b-4 border-aws-accent/80 transform hover:translate-y-[-5px] transition duration-200">
+                        <div class="text-3xl font-extrabold text-aws-accent mb-2">01</div>
+                        <h4 class="text-lg font-bold mb-1">困り事の投稿</h4>
+                        <p class="text-xs text-gray-500">要件、報酬額、完了条件を明確に記入。</p>
+                    </div>
+
+                    <!-- ステップ 2 -->
+                    <div class="p-4 bg-white rounded-xl shadow-lg border-b-4 border-aws-accent/80 transform hover:translate-y-[-5px] transition duration-200">
+                        <div class="text-3xl font-extrabold text-aws-accent mb-2">02</div>
+                        <h4 class="text-lg font-bold mb-1">Blinkerが即受注</h4>
+                        <p class="text-xs text-gray-500">最も早く最適なエンジニアが名乗り出ます。</p>
+                    </div>
+
+                    <!-- ステップ 3 -->
+                    <div class="p-4 bg-white rounded-xl shadow-lg border-b-4 border-aws-accent/80 transform hover:translate-y-[-5px] transition duration-200">
+                        <div class="text-3xl font-extrabold text-aws-accent mb-2">03</div>
+                        <h4 class="text-lg font-bold mb-1">一時ロールで作業</h4>
+                        <p class="text-xs text-gray-500">安全な最小権限ロールを発行し、作業開始。</p>
+                    </div>
+
+                    <!-- ステップ 4 -->
+                    <div class="p-4 bg-white rounded-xl shadow-lg border-b-4 border-aws-accent/80 transform hover:translate-y-[-5px] transition duration-200">
+                        <div class="text-3xl font-extrabold text-aws-accent mb-2">04</div>
+                        <h4 class="text-lg font-bold mb-1">検収と支払い</h4>
+                        <p class="text-xs text-gray-500">成果確認後、報酬を決済しタスク完了。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA / 依頼者向け -->
+        <section class="py-12 bg-aws-accent text-white shadow-2xl">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-2xl font-bold mb-4">
+                    あなたのAWS課題を今日中に解決しましょう。
+                </h2>
+                <a href="#forms" class="inline-block bg-white text-aws-accent text-lg font-bold py-3 px-10 rounded-xl shadow-2xl transition duration-300 transform hover:scale-105 ring-4 ring-white">
+                    今すぐ相談フォームへ
                 </a>
             </div>
-        </div>
-    </section>
-
-    <!-- Forms Section -->
-    <section id="forms" class="py-16 sm:py-24 bg-gray-50">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl mb-12 text-center">今すぐタスクを解決 / スキルを活かす</h2>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                
-                <!-- Requester Form: タスクを投稿する -->
-                <div id="post-request" class="form-section p-8 bg-white rounded-xl shadow-2xl border-t-4 border-indigo-600">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">依頼者：タスクを投稿する</h3>
-                    <p class="text-gray-600 mb-6">AWSの小さな課題を解決するために、必要な情報を入力してください。</p>
-                    <form action="https://formspree.io/f/your-form-id" method="POST" class="space-y-4">
-                        <input type="hidden" name="_subject" value="新しいタスク投稿">
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">名前 <span class="text-red-500">*</span></span>
-                            <input type="text" name="requester_name" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3">
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">メールアドレス <span class="text-red-500">*</span></span>
-                            <input type="email" name="requester_email" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3">
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">タスクカテゴリ (AWSサービス) <span class="text-red-500">*</span></span>
-                            <select name="task_category" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 bg-white">
-                                <option value="" disabled selected>カテゴリを選択してください</option>
-                                <option value="IAM">IAM (権限管理)</option>
-                                <option value="S3">S3 (ストレージ)</option>
-                                <option value="CloudWatch">CloudWatch (監視・ログ)</option>
-                                <option value="EC2">EC2 (仮想サーバー)</option>
-                                <option value="SecurityGroup">セキュリティグループ (ネットワーク設定)</option>
-                                <option value="Others">その他</option>
-                            </select>
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">タスクタイトル <span class="text-red-500">*</span></span>
-                            <input type="text" name="task_title" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3" placeholder="例: 開発環境のEC2にSSH接続できる設定にしたい">
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">タスク詳細 <span class="text-red-500">*</span></span>
-                            <textarea name="task_details" placeholder="現在の状況、発生している問題、背景などをご記入ください" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 resize-y min-h-[100px]"></textarea>
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">成果条件 (検収条件) <span class="text-red-500">*</span></span>
-                            <textarea name="acceptance_criteria" placeholder="例：ユーザーXがS3バケットYにファイルを書き込めるスクリーンショットを提示" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 resize-y min-h-[100px]"></textarea>
-                        </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">報酬額 (円) <span class="text-red-500">*</span></span>
-                            <input type="number" name="reward" min="0" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3" placeholder="5000 (成果に対して支払う金額)">
-                        </label>
-                        <button type="submit" class="w-full submit-btn bg-indigo-600 text-white py-3 rounded-xl font-semibold shadow-lg hover:bg-indigo-700 transition duration-300">
-                            依頼を送信する
-                        </button>
-                    </form>
-                </div>
-                
-                <!-- Blinker Signup Form: Blinkersに登録する -->
-                <div id="blinker-signup" class="form-section p-8 bg-white rounded-xl shadow-2xl border-t-4 border-pink-500">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Blinkers：登録フォーム</h3>
-                    <p class="text-gray-600 mb-6">あなたのAWSスキルを活かして、報酬を得ませんか？</p>
+        </section>
+        
+        <!-- Blinkers向け：エンジニア登録セクション (背景色修正) -->
+        <section id="blinker-cta" class="py-16 md:py-20 bg-aws-main text-white">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <!-- 修正: 濃い背景色に text-white で確実に表示 -->
+                <h2 class="text-3xl font-extrabold mb-4 flex items-center justify-center text-white">
+                    <svg class="w-8 h-8 mr-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.864 23.864 0 0112 15c-3.138 0-6.04-.632-8.497-1.745M4 17h16M4 5h16M12 12V3"></path></svg>
+                    Blinkersとして活躍しませんか？
+                </h2>
+                <p class="text-lg font-medium mb-8 opacity-90 text-white">
+                    あなたのAWSスキルを活かし、空いた時間で高報酬を得られる即時マッチングに参加しましょう。
+                </p>
+                 <!-- Blinker Signup Form: エンジニア登録 -->
+                <div class="p-8 bg-white rounded-2xl shadow-2xl border-b-8 border-aws-accent">
                     <form action="https://formspree.io/f/your-form-id" method="POST" class="space-y-4">
                         <input type="hidden" name="_subject" value="Blinker 新規登録">
                         <label class="block">
-                            <span class="text-gray-700 font-medium">名前 <span class="text-red-500">*</span></span>
-                            <input type="text" name="blinker_name" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 p-3">
+                            <span class="text-xs font-semibold text-gray-900 text-left block">お名前 <span class="text-red-500">*</span></span>
+                            <input type="text" name="blinker_name" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-aws-main focus:ring-aws-main p-3 text-sm text-gray-800">
                         </label>
                         <label class="block">
-                            <span class="text-gray-700 font-medium">メールアドレス <span class="text-red-500">*</span></span>
-                            <input type="email" name="blinker_email" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 p-3">
+                            <span class="text-xs font-semibold text-gray-900 text-left block">メールアドレス <span class="text-red-500">*</span></span>
+                            <input type="email" name="blinker_email" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-aws-main focus:ring-aws-main p-3 text-sm text-gray-800">
                         </label>
+                        
+                        <!-- 実施可能なサービスタグ (複数選択式) -->
+                        <div class="block">
+                            <span class="text-xs font-semibold text-gray-900 text-left block mb-2">得意なAWSサービス (複数選択可) <span class="text-red-500">*</span></span>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-900">
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="services" value="EC2" class="form-checkbox h-4 w-4 text-aws-accent rounded border-gray-300 focus:ring-aws-accent">
+                                    <span class="ml-2">EC2 (Compute)</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="services" value="S3" class="form-checkbox h-4 w-4 text-aws-accent rounded border-gray-300 focus:ring-aws-accent">
+                                    <span class="ml-2">S3 (Storage)</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="services" value="Lambda" class="form-checkbox h-4 w-4 text-aws-accent rounded border-gray-300 focus:ring-aws-accent">
+                                    <span class="ml-2">Lambda (Serverless)</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="services" value="RDS" class="form-checkbox h-4 w-4 text-aws-accent rounded border-gray-300 focus:ring-aws-accent">
+                                    <span class="ml-2">RDS/DynamoDB (DB)</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="services" value="IAM" class="form-checkbox h-4 w-4 text-aws-accent rounded border-gray-300 focus:ring-aws-accent">
+                                    <span class="ml-2">IAM (Security)</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="services" value="VPC" class="form-checkbox h-4 w-4 text-aws-accent rounded border-gray-300 focus:ring-aws-accent">
+                                    <span class="ml-2">VPC/Networking</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="services" value="CloudFormation" class="form-checkbox h-4 w-4 text-aws-accent rounded border-gray-300 focus:ring-aws-accent">
+                                    <span class="ml-2">CloudFormation/CDK</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="services" value="EKS/ECS" class="form-checkbox h-4 w-4 text-aws-accent rounded border-gray-300 focus:ring-aws-accent">
+                                    <span class="ml-2">EKS/ECS (Container)</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <label class="block">
-                            <span class="text-gray-700 font-medium">得意なスキルタグ (複数選択可) <span class="text-red-500">*</span></span>
-                            <select name="skill_tags[]" multiple size="5" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 p-3 bg-white">
-                                <option value="IAM">IAM (権限管理)</option>
-                                <option value="S3">S3 (ストレージ)</option>
-                                <option value="CloudWatch">CloudWatch (監視・ログ)</option>
-                                <option value="EC2">EC2 (仮想サーバー)</option>
-                                <option value="SecurityGroup">セキュリティグループ</option>
-                                <option value="VPC">VPC (ネットワーク)</option>
-                                <option value="Lambda">Lambda (サーバーレス)</option>
-                            </select>
-                            <small class="text-gray-500">※Ctrl/Commandキーを押しながら複数選択できます。</small>
+                            <span class="text-xs font-semibold text-gray-900 text-left block">その他の実績・自己紹介 <span class="text-red-500">*</span></span>
+                            <textarea name="blinker_profile" placeholder="例：SAA取得、Lambda/DynamoDBを用いた開発経験3年。即時対応可能な時間帯など。" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-aws-main focus:ring-aws-main p-3 text-sm resize-y min-h-[80px] text-gray-800"></textarea>
                         </label>
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">自己紹介・実績 <span class="text-red-500">*</span></span>
-                            <textarea name="blinker_profile" placeholder="これまでのAWS経験、得意分野、取得資格などをご記入ください" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 p-3 resize-y min-h-[100px]"></textarea>
-                        </label>
-                        <button type="submit" class="w-full submit-btn bg-pink-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:bg-pink-600 transition duration-300">
-                            Blinkersとして登録する
+                        <button type="submit" class="w-full bg-aws-accent text-white py-3 rounded-xl font-extrabold shadow-xl hover:bg-aws-accent-dark transition duration-300 text-lg transform hover:scale-[1.02] mt-6 ring-4 ring-white/50">
+                            Blinkersに今すぐ登録
                         </button>
                     </form>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <!-- Security & Compliance Section (FAQの上に移動し、強調) -->
-    <section id="security" class="py-16 bg-gray-100">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl mb-4">安心してご利用いただくために</h2>
-            <p class="text-lg text-gray-600 mb-8">お客様のAWS環境を保護するため、セキュリティとコンプライアンスを最優先しています。</p>
-            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-gray-200 text-left space-y-4">
-                <div class="flex items-start">
-                    <svg class="w-6 h-6 text-indigo-500 flex-shrink-0 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <p class="ml-3 text-gray-700"><strong>最小権限ロールの徹底:</strong> タスク専用のIAMロールを一時的に発行し、作業完了後すぐにアクセス権を削除します。</p>
-                </div>
-                <div class="flex items-start">
-                    <svg class="w-6 h-6 text-indigo-500 flex-shrink-0 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M2 9h20M10 14h4M12 17v-3"/></svg>
-                    <p class="ml-3 text-gray-700"><strong>詳細な操作ログの記録:</strong> すべての作業は監査ログとして記録され、トラブル発生時にも操作内容を確認可能です。</p>
-                </div>
-                <div class="flex items-start">
-                    <svg class="w-6 h-6 text-indigo-500 flex-shrink-0 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l-8 4v8c0 4.4 3.6 8 8 8s8-3.6 8-8V6l-8-4z"/><path d="M12 16h.01"/></svg>
-                    <p class="ml-3 text-gray-700"><strong>安心の仲裁フロー:</strong> 成果物や作業に関するトラブルが発生した場合は、運営事務局が中立的な立場でサポートします。</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- FAQ Section -->
-    <section id="faq" class="py-16 sm:py-24">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl mb-10 text-center">よくある質問 (FAQ)</h2>
-            <div class="space-y-6">
-                
-                <div class="faq-item bg-white p-5 rounded-lg shadow-md border border-gray-100">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-2">Q. タスクを投稿してからどれくらいで受注されますか？</h4>
-                    <p class="text-gray-600">A. 多くのタスクは**数分以内**にBlinkersからの応答があります。即時通知システムを採用しているため、スキルの需要にもよりますが、非常に早いマッチングを実現しています。</p>
-                </div>
-                
-                <div class="faq-item bg-white p-5 rounded-lg shadow-md border border-gray-100">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-2">Q. 報酬の支払い方法は？</h4>
-                    <p class="text-gray-600">A. 現在は Stripe を通じたクレジットカード決済を準備中です。β版ではお振込や後払いなど、柔軟に対応いたします。正式版では、安心して決済できるシステムを導入予定です。</p>
-                </div>
-                
-                <div class="faq-item bg-white p-5 rounded-lg shadow-md border border-gray-100">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-2">Q. 成果が出なかった場合、報酬は発生しますか？</h4>
-                    <p class="text-gray-600">A. いいえ、発生しません。CloudBlinkerは**完全成果報酬型**です。事前に定めた成果条件を満たさなかった場合、報酬の支払いは不要です。トラブル時は運営が仲裁を行いますのでご安心ください。</p>
-                </div>
+    </main>
 
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
+    <!-- フッター (サイト名修正: CloudBlinker) -->
     <footer class="bg-gray-900 text-gray-400 py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-lg font-semibold text-white mb-2">CloudBlinker</p>
-            <div class="flex justify-center space-x-6 text-sm mb-4">
-                <a href="#post-request" class="hover:text-white transition duration-150">依頼を投稿</a>
-                <a href="#blinker-signup" class="hover:text-white transition duration-150">Blinkers 登録</a>
-                <a href="#" class="hover:text-white transition duration-150">利用規約</a>
-                <a href="#" class="hover:text-white transition duration-150">プライバシーポリシー</a>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-xs md:text-sm">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <p class="font-bold text-white text-base">CloudBlinker</p>
+                <div class="space-x-4">
+                    <a href="#" class="hover:text-aws-accent transition duration-150">利用規約</a>
+                    <a href="#" class="hover:text-aws-accent transition duration-150">プライバシーポリシー</a>
+                    <a href="#" class="hover:text-aws-accent transition duration-150">運営会社</a>
+                </div>
+                <p>&copy; 2025 CloudBlinker. All rights reserved.</p>
             </div>
-            <p class="text-xs">&copy; 2025 CloudBlinker. All rights reserved.</p>
         </div>
     </footer>
+
 </body>
 </html>
