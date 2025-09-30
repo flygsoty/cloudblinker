@@ -30,6 +30,7 @@
     </div>
 
     <div class="bg-white shadow-xl rounded-2xl p-8">
+      <!-- サインアップフォーム -->
       <form id="sign-up-form" class="space-y-6">
         <input type="hidden" name="role" value="client" />
         <div>
@@ -48,6 +49,7 @@
         <button type="submit" class="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-orange-500 transition">サインアップ</button>
       </form>
 
+      <!-- Google認証ボタン -->
       <div class="mt-6">
         <button type="button" data-google-auth data-role="client" class="w-full flex items-center justify-center border border-slate-200 rounded-lg py-3 text-sm font-medium hover:bg-slate-50 transition">
           Googleで登録
@@ -60,8 +62,11 @@
     </div>
   </div>
 
+  <!-- JSの読み込み順序を明示 -->
   <script type="module" src="/assets/js/app.js"></script>
   <script type="module" src="/assets/js/auth.js"></script>
+
+  <!-- URLパラメータによるrole切替 -->
   <script>
     const params = new URLSearchParams(window.location.search);
     const role = params.get('role');
