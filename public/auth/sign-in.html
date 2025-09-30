@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CloudBlinker | ログイン</title>
+  <title>CloudBlinker | サインイン</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/tailwind.css" />
   <script src="/assets/js/env.js"></script>
@@ -26,10 +26,11 @@
       <a href="/" class="inline-flex items-center text-2xl font-bold text-slate-900">
         <span class="text-primary">Cloud</span>Blinker
       </a>
-      <p class="mt-2 text-sm text-slate-500">登録したメールアドレスとパスワードでログインしてください。</p>
+      <p class="mt-2 text-sm text-slate-500">アカウントにログインして始めましょう。</p>
     </div>
 
     <div class="bg-white shadow-xl rounded-2xl p-8">
+      <!-- サインインフォーム -->
       <form id="sign-in-form" class="space-y-6">
         <div>
           <label class="block text-sm font-medium text-slate-700">メールアドレス</label>
@@ -42,6 +43,7 @@
         <button type="submit" class="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-orange-500 transition">ログイン</button>
       </form>
 
+      <!-- Google認証ボタン -->
       <div class="mt-6">
         <button type="button" data-google-auth class="w-full flex items-center justify-center border border-slate-200 rounded-lg py-3 text-sm font-medium hover:bg-slate-50 transition">
           Googleでログイン
@@ -49,11 +51,12 @@
       </div>
 
       <p class="mt-6 text-center text-sm text-slate-500">
-        アカウントが必要ですか？ <a href="/auth/sign-up.html" class="text-primary font-semibold">新規登録</a>
+        アカウントをお持ちでないですか？ <a href="/auth/sign-up.html" class="text-primary font-semibold">サインアップ</a>
       </p>
     </div>
   </div>
 
+  <!-- JSの読み込み -->
   <script type="module" src="/assets/js/app.js"></script>
   <script type="module" src="/assets/js/auth.js"></script>
 </body>
